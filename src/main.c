@@ -12,6 +12,9 @@ const char debugMode = 1;
 char* inputFile = "";
 char* outputFile = "";
 
+char* inputFileBuffer;
+char* outputFileBuffer;
+
 int* skip;
 int skipSize = 0;
 
@@ -57,6 +60,27 @@ Command commands[] = {
     {"-o", output},
     {NULL, NULL}
 };
+
+char translateToASM() {
+    FILE *inputSource = fopen(inputFile, "r");
+    if (inputSource == NULL) {
+        printf("FILE NOT COMPATIBLE OR NOT EXISTS, SOLDIER!\n");
+        return -1;
+    }
+    fseek(inputSource, 0, SEEK_END);
+    long fileSize = ftell(inputSource);
+    rewind(inputSource);
+    inputFileBuffer = malloc(fileSize + 1);
+    if (inputFileBuffer == NULL) {
+        printf("FAILED TO ALLOCATE MEMORY, SOLDIER!\n");
+        fclose(inputSource);
+        return -1;
+    }
+    fread(inputFileBuffer, 1, fileSize, inputSource);
+    inputFileBuffer[fileSize] = '\0';
+    fclose(inputSource);
+    return 0;
+}
 
 int execute(char* arg, int argc, char* argv[], int num) {
     for (int i = 0; commands[i].command_name != NULL; i++) {
@@ -113,13 +137,31 @@ int main(int argc, char* argv[]) {
                     printf("Unknown instruction '%s'. SOLDIER, WHAT THE HELL ARE YOU TRYING!?\n", tmp);
                 }
                 else if (result == 2) {
-                    printf("Missing input file: '%s'. SOLDIER, MIRACLES DON'T HAPPEN — MOVE!\n", tmp);
+                    printf("Missing input/output file: '%s'. SOLDIER, MIRACLES DON'T HAPPEN — MOVE!\n", tmp);
                 }
                 else
                     printf("Unknown error, while executing '%s'. WATCH YOURSELF, SOLDIER!\n", tmp);
                 return -1;
             }
         }
+        if (inputFile == "") {
+            printf("WHAT I NEED TO COMPILE, SOLDIER!? YOU'RE NOT SET INPUT!\n");
+            return -1;
+        }
+        if (outputFile == "") {
+            printf("If I will compile it, WHERE I WILL SAVE IT, SODIER!? YOU'RE NOT SET OUTPUT!\n");
+            return -1;
+        }
+        char trnsltd = translateToASM();
+        if (trnsltd == 0) {
+            trnsltd = compileASM();
+            if (trnsltd == 0)
+                printf("Done compiling.\n");
+            else
+                printf("CANNOT COMPILE, SOLDIER!\n");
+        }
+        else
+            printf("CANNOT TRANSLATE YOUR CODE, SOLDIER! ARE YOU IDIOT!?\n");
     }
     return 0;
 }
