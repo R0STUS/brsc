@@ -54,6 +54,11 @@ typedef struct {
     int (*handler)(int argc, char* argv[], int num);
 } Command;
 
+typedef struct {
+    const char* mode_name;
+    const char mode;
+}
+
 Command commands[] = {
     {"--help", helpNahui},
     {"-i", input},
@@ -79,6 +84,14 @@ char translateToASM() {
     fread(inputFileBuffer, 1, fileSize, inputSource);
     inputFileBuffer[fileSize] = '\0';
     fclose(inputSource);
+    long i;
+    char state = 0;
+    unsigned char mode = 0;
+    char** ddata_field;
+    char** dbss_field;
+    for (i = 0; i < fileSize; i++) {
+
+    }
     return 0;
 }
 
@@ -87,22 +100,20 @@ int execute(char* arg, int argc, char* argv[], int num) {
         if (strcmp(commands[i].command_name, arg) == 0) {
             return commands[i].handler(argc, argv, num);
         }
-        else {
-            char* tmp = commands[i].command_name;
-            char* tmp2 = arg;
-            if (debugMode == 1) {
-                printf("Debug: '%s' = '", tmp2);
-                while (*tmp2) {
-                    printf("%02X ", (unsigned char)*tmp2);
-                    tmp2++;
-                }
-                printf("\b' != '%s' = '", tmp);
-                while (*tmp) {
-                    printf("%02X ", (unsigned char)*tmp);
-                    tmp++;
-                }
-                printf("\b'\n");
+        else if (debugMode == 1) {
+            char* tmp = arg;
+            printf("Debug: '%s' = '", tmp);
+            while (*tmp2) {
+                printf("%02X ", (unsigned char)*tmp);
+                tmp++;
             }
+            tmp = commands[i].command_name;
+            printf("\b' != '%s' = '", tmp);
+            while (*tmp) {
+                printf("%02X ", (unsigned char)*tmp);
+                tmp++;
+            }
+            printf("\b'\n");
         }
     }
     return 1;
@@ -112,35 +123,29 @@ int main(int argc, char* argv[]) {
     if (argc < 2)
         printf("%s\n", help);
     else {
+        char cont;
         for (int i = 1; i < argc; i++) {
-            char cont = 0;
+            cont = 0;
             for (int k = 0; k < skipSize; k++) {
                 if (skip[k] == i)
                     cont = 1;
             }
             if (cont == 1)
                 continue;
-            char *tmp = NULL;
-            int size = 0;
             int result;
-            for (int j = 0; argv[i][j] != '\0'; j++) {
-                size++;
-                tmp = realloc(tmp, size);
-                tmp[j] = argv[i][j];
-            }
-            result = execute(tmp, argc, argv, i);
+            result = execute(argv[i], argc, argv, i);
             if (result == 0) {
             }
             else {
                 printf("Error: ");
                 if (result == 1) {
-                    printf("Unknown instruction '%s'. SOLDIER, WHAT THE HELL ARE YOU TRYING!?\n", tmp);
+                    printf("Unknown instruction '%s'. SOLDIER, WHAT THE HELL ARE YOU TRYING!?\n", argv[i]);
                 }
                 else if (result == 2) {
-                    printf("Missing input/output file: '%s'. SOLDIER, MIRACLES DON'T HAPPEN — MOVE!\n", tmp);
+                    printf("Missing input/output file: '%s'. SOLDIER, MIRACLES DON'T HAPPEN — MOVE!\n", argv[i]);
                 }
                 else
-                    printf("Unknown error, while executing '%s'. WATCH YOURSELF, SOLDIER!\n", tmp);
+                    printf("Unknown error, while executing '%s'. WATCH YOURSELF, SOLDIER!\n", argv[i]);
                 return -1;
             }
         }
@@ -152,16 +157,20 @@ int main(int argc, char* argv[]) {
             printf("If I will compile it, WHERE I WILL SAVE IT, SODIER!? YOU'RE NOT SET OUTPUT!\n");
             return -1;
         }
-        char trnsltd = translateToASM();
-        if (trnsltd == 0) {
-            trnsltd = compileASM();
-            if (trnsltd == 0)
-                printf("Done compiling.\n");
-            else
+        cont = translateToASM();
+        if (cont == 0) {
+            cont = compileASM();
+            if (cont == 0)
+                printf("Done compiling your garbage code, soldier.\n");
+            else {
                 printf("CANNOT COMPILE, SOLDIER!\n");
+                return -1;
+            }
         }
-        else
+        else {
             printf("CANNOT TRANSLATE YOUR CODE, SOLDIER! ARE YOU IDIOT!?\n");
+            return -1;
+        }
     }
     return 0;
 }
