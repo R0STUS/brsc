@@ -87,13 +87,14 @@ char translateToASM() {
     long i;
     char state = 0;
     unsigned char mode = 0;
-    char** ddata_section;
-    int ddata_section_sizeA = 0;
-    int ddata_section_sizeB = 0;
-    char** dbss_section;
-    int dbss_section_sizeA = 0;
-    int dbss_section_sizeB = 0;
-    char* operand;
+    char** ddata_section = NULL;
+    unsigned int ddata_section_sizeA = 0;
+    unsigned int* ddata_section_sizeB = NULL;
+    unsigned int ddata_section_operand_id = 0xDEADC0DE;
+    /*char** dbss_section; // I don't know why I created this, so, mark as comment for while.
+    unsigned int dbss_section_sizeA = 0;
+    unsigned int dbss_section_sizeB = 0;*/
+    char* operand = NULL;
     int operand_size = 0;
     for (i = 0; i < fileSize; i++) {
         if (inputFileBuffer == ';') {state = 0; mode = 0; operand_size = 0;}
@@ -105,7 +106,18 @@ char translateToASM() {
         }
         else if (state == 1) {
             if (inputFileBuffer[i] == ' ' && operand_size < 1) {
-                printf("SOLDIER, WHAT DO YOU WANT TO DECLARE!? SPACE IS NOT A DECLAREABLE SYMBOL!\n");
+                printf("SOLDIER, WHAT DO YOU WANT TO DECLARE!? SPACE IS NOT A DECLARABLE SYMBOL!\n");
+                return -1;
+            }
+            else if (inputFileBuffer[i] == ' ') {
+                ddata_section_sizeA++;
+                ddata_section = realloc(ddata_section, ddata_section_sizeA);
+                ddata_section[ddata_section_sizeA - 1] = operand;
+                ddata_section_sizeB[ddata_section_sizeA - 1] = operand_size + 5;
+                ddata_section[ddata_section_sizeA - 1] = realloc(ddata_section[ddata_section_sizeA - 1], ddata_section_sizeB[ddata_section_sizeA - 1]);
+                strcat(ddata_section[ddata_section_sizeA - 1], " res");
+                operand_size = 0;
+                operand = realloc(operand, operand_size);
                 return -1;
             }
             operand_size++;
