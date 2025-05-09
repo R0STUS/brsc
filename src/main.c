@@ -83,14 +83,35 @@ char translateToASM() {
     }
     fread(inputFileBuffer, 1, fileSize, inputSource);
     inputFileBuffer[fileSize] = '\0';
-    fclose(inputSource);
+    fclose(inputSource); // TODO: Optimize translator garbage code
     long i;
     char state = 0;
     unsigned char mode = 0;
-    char** ddata_field;
-    char** dbss_field;
+    char** ddata_section;
+    int ddata_section_sizeA = 0;
+    int ddata_section_sizeB = 0;
+    char** dbss_section;
+    int dbss_section_sizeA = 0;
+    int dbss_section_sizeB = 0;
+    char* operand;
+    int operand_size = 0;
     for (i = 0; i < fileSize; i++) {
-
+        if (inputFileBuffer == ';') {state = 0; mode = 0; operand_size = 0;}
+        if (state == 0) {
+            if (inputFileBuffer[i] == '+') {
+                state = 1;
+                mode = 1;
+            }
+        }
+        else if (state == 1) {
+            if (inputFileBuffer[i] == ' ' && operand_size < 1) {
+                printf("SOLDIER, WHAT DO YOU WANT TO DECLARE!? SPACE IS NOT A DECLAREABLE SYMBOL!\n");
+                return -1;
+            }
+            operand_size++;
+            operand = realloc(operand, operand_size);
+            operand[operand_size - 1] = inputFileBuffer[i];
+        }
     }
     return 0;
 }
