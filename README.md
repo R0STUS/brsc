@@ -1,3 +1,5 @@
+![image](https://github.com/R0STUS/bvm-compiler/BRASS.svg)
+
 # LANGUAGE DOCUMENTATION, SOLDIER!
 
 Now listen up, I’m gonna tell you everything there is about the language, SOLDIER:
