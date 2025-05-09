@@ -104,7 +104,7 @@ char translateToASM() {
                 mode = 1;
             }
         }
-        else if (state == 1) {
+        else if (state == 1 && mode == 1) {
             if (inputFileBuffer[i] == ' ' && operand_size < 1) {
                 printf("SOLDIER, WHAT DO YOU WANT TO DECLARE!? SPACE IS NOT A DECLARABLE SYMBOL!\n");
                 return -1;
@@ -118,11 +118,13 @@ char translateToASM() {
                 strcat(ddata_section[ddata_section_sizeA - 1], " res");
                 operand_size = 0;
                 operand = realloc(operand, operand_size);
-                return -1;
+                state = 2;
             }
-            operand_size++;
-            operand = realloc(operand, operand_size);
-            operand[operand_size - 1] = inputFileBuffer[i];
+            else {
+                operand_size++;
+                operand = realloc(operand, operand_size);
+                operand[operand_size - 1] = inputFileBuffer[i];
+            }
         }
     }
     return 0;
