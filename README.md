@@ -1,4 +1,4 @@
-![image](https://github.com/R0STUS/bvm-compiler/BRASS.svg)
+![image](https://raw.githubusercontent.com/R0STUS/bvm-compiler/0d5597dc9f062f3f9a751df23786498c6dd328b9/BRASS.svg)
 
 # LANGUAGE DOCUMENTATION, SOLDIER!
 
