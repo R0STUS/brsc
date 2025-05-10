@@ -127,7 +127,7 @@ char translateToASM() {
             }
         }
         else if (state == 2 && mode == 1) {
-            if (inputFileBuffer[i] == ' ' && operand_size > 0) {
+            if (inputFileBuffer[i] == ' ' && operand_size > 0) { // What the fuck? Need FULL refactor.
                 ddata_section[ddata_section_sizeA - 1] = declare(&ddata_section[ddata_section_sizeA - 1], &ddata_section_sizeB[ddata_section_sizeA - 1], operand, operand_size);
                 operand_size = 0;
                 operand = realloc(operand, operand_size);
