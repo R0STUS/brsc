@@ -91,9 +91,10 @@ char translateToASM() {
     unsigned int ddata_section_sizeA = 0;
     unsigned int* ddata_section_sizeB = NULL;
     unsigned int ddata_section_operand_id = 0xDEADC0DE;
-    /*char** dbss_section; // I don't know why I created this, so, mark as comment for while.
+    char** dbss_section = NULL;
     unsigned int dbss_section_sizeA = 0;
-    unsigned int dbss_section_sizeB = 0;*/
+    unsigned int dbss_section_sizeB = 0;
+    unsigned int dbss_section_operand_id = 0xDEADC0DE;
     char* operand = NULL;
     int operand_size = 0;
     for (i = 0; i < fileSize; i++) {
@@ -110,12 +111,12 @@ char translateToASM() {
                 return -1;
             }
             else if (inputFileBuffer[i] == ' ') {
-                ddata_section_sizeA++;
-                ddata_section = realloc(ddata_section, ddata_section_sizeA);
-                ddata_section[ddata_section_sizeA - 1] = operand;
-                ddata_section_sizeB[ddata_section_sizeA - 1] = operand_size + 5;
-                ddata_section[ddata_section_sizeA - 1] = realloc(ddata_section[ddata_section_sizeA - 1], ddata_section_sizeB[ddata_section_sizeA - 1]);
-                strcat(ddata_section[ddata_section_sizeA - 1], " res");
+                dbss_section_sizeA++;
+                dbss_section = realloc(ddata_section, dbss_section_sizeA);
+                dbss_section[dbss_section_sizeA - 1] = operand;
+                dbss_section_sizeB[dbss_section_sizeA - 1] = operand_size + 5;
+                dbss_section[dbss_section_sizeA - 1] = realloc(dbss_section[dbss_section_sizeA - 1], dbss_section_sizeB[dbss_section_sizeA - 1]);
+                strcat(dbss_section[dbss_section_sizeA - 1], " res");
                 operand_size = 0;
                 operand = realloc(operand, operand_size);
                 state = 2;
@@ -128,7 +129,7 @@ char translateToASM() {
         }
         else if (state == 2 && mode == 1) {
             if (inputFileBuffer[i] == ' ' && operand_size > 0) { // What the fuck? Need FULL refactor.
-                ddata_section[ddata_section_sizeA - 1] = declare(&ddata_section[ddata_section_sizeA - 1], &ddata_section_sizeB[ddata_section_sizeA - 1], operand, operand_size);
+                dbss_section[dbss_section_sizeA - 1] = declare(&dbss_section[dbss_section_sizeA - 1], &dbss_section_sizeB[dbss_section_sizeA - 1], operand, operand_size);
                 operand_size = 0;
                 operand = realloc(operand, operand_size);
                 state = 2;
