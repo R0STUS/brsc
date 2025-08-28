@@ -48,11 +48,12 @@ char* getArg(char wh) {
     return NULL;
 }
 
-int parseFile(char** code, int* codeSize) {
+int parseFile(char** code, char* filename, int* codeSize) {
     FILE* infile = fopen(filename, "r");
     char line[256];
     char* buf = malloc(1);
     int bufsize = 0;
+    int prevpos = 0;
     int i;
     if (infile == NULL) {
         fprintf(stderr, "Cannot open input file '%s': %s\n", filename, strerror(errno));
@@ -63,14 +64,26 @@ int parseFile(char** code, int* codeSize) {
             if (line[i] == ' ' || line[i] == '\t' || line[i] == '\n') {
                 if (bufsize == 0)
                     continue;
-                
+                bufsize++;
+                bufsize -= prevpos;
+                buf = malloc(bufsize);
+                if (buf == NULL) {
+                    fprintf(stderr, "Cannot allocate memory!\n");
+                    return -1;
+                }
+                snprintf(buf, bufsize, "%s", line + prevpos);
+                getMeaning(buf, bufsize);
+                bufsize = 0;
             }
+            bufsize++;
         }
     }
     return 0;
 }
 
 int main(int argc, char* argv[]) {
+    char* code;
+    int codeSize;
     char* inp;
     args = malloc(sizeof(Arg));
     args[0].name = 0;
