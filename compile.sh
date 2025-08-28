@@ -1,6 +1,7 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 SOURCES="src/main.c"
-OUTPUT="bvmc"
+OUTPUT="brsc"
+CONFIG="-D_POSIX_C_SOURCE=200112L -std=c90 -pedantic-errors -Wall -Wextra"
 
-gcc $SOURCES -o $OUTPUT
+gcc $SOURCES $CONFIG -o $OUTPUT
